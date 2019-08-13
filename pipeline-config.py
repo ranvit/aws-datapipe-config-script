@@ -1,3 +1,7 @@
+# TODO: Update "values" dict with all user_input for #{myVariable} types
+# TODO: Order definitions by {required/optional} params, incorporate into user_input
+# TODO: Pass a dict of user_params to functions?
+
 raw_cfg = {
     "objects": list(),
     "parameters": list(),
@@ -41,3 +45,21 @@ def scheduler_node():
         "startAt": "FIRST_ACTIVATION_DATE_TIME"
     }
 
+
+# Definition for source database
+# Could incorporate multiple databases with flexible user_input form
+def source_db():
+    raw_src_db = {
+        "id": "src_db",
+        "type": "JdbcDatabase",
+
+        # Required
+        "connectionString": "#{myRDSJdbcConnectStr}",
+        "jdbcDriverClass": "com.mysql.jdbc.Driver",  # Multiple configs - mysql, psql,
+        "*password": "#{*myRDSPassword}",
+        "username": "#{myRDSUsername}",
+
+        # Optional
+        "name": "src_db",
+        "jdbcProperties": "allowMultiQueries=true"
+    }
