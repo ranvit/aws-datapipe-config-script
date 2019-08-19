@@ -5,6 +5,8 @@
 """
 IDEAS:
 Which variables should be #{myVariables}?
+Automatic output upload to S3?
+  - (since import build config randomly fails when importing from local)
 """
 
 import json
@@ -131,7 +133,9 @@ def s3_staging(index):
         "type": "S3DataNode",
 
         "directoryPath":
-            "#{{myS3StagingLoc}}/#{{format(@scheduledStartTime, 'YYYY-MM-dd-HH-mm-ss')}}/data/table_{0}".format(index),
+            "#{{myS3StagingLoc}}/"
+            "#{{format(@scheduledStartTime, 'YYYY-MM-dd-HH-mm-ss')}}/"
+            "data/table_{0}".format(index),
         "name": "S3StagingDataNode_{0}".format(index)
     }
     return raw_s3_node
@@ -206,8 +210,8 @@ def shell_s3_cleanup(num_jobs, sns_bool=0):
 
         # Require either of the following BUT NOT BOTH
         "command":
-            "(sudo yum -y update aws-cli) && " \
-            "(aws s3 rm #{myS3StagingLoc}/#{format(@scheduledStartTime, 'YYYY-MM-dd-HH-mm-ss')}/data/ " \
+            "(sudo yum -y update aws-cli) && "
+            "(aws s3 rm #{myS3StagingLoc}/#{format(@scheduledStartTime, 'YYYY-MM-dd-HH-mm-ss')}/data/ "
             "--recursive)",
         # "scriptUri": ,
 
@@ -348,9 +352,10 @@ def builder(filepath):
     if user_input["sns_bool"] == 1:
         raw_cfg["objects"].append(sns_completion(user_input["sns_topic_arn"]))
 
+    # Write the final pipeline definition dict to a json file
     with open('pipeline-definition-output.json', 'w') as fp:
         json.dump(raw_cfg, fp, indent=2)
 
 
 if __name__ == "__main__":
-    builder('./user_input.json')
+    builder('./complex_user_input.json')
